@@ -140,7 +140,7 @@
       <input id="totalHarga" readonly placeholder="Rp 0">
 
       <label>Ringkasan Pesanan</label>
-      <textarea id="ringkasan" rows="4" readonly></textarea>
+      <div id="ringkasanList" style="margin-top:8px"></div>
 
       <button class="submit" type="submit">Kirim Pesanan via WhatsApp</button>
     </form>
@@ -224,12 +224,40 @@ document.getElementById('addItem').addEventListener('click', ()=>{
 
 function renderCart(){
   let total = 0;
-  let lines = [];
-  cart.forEach(i=>{
+  const list = document.getElementById('ringkasanList');
+  list.innerHTML = '';
+
+  cart.forEach((i, index)=>{
     total += i.harga * i.qty;
-    lines.push(`- ${i.nama} x${i.qty}`);
+
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.justifyContent = 'space-between';
+    row.style.alignItems = 'center';
+    row.style.marginBottom = '6px';
+
+    const text = document.createElement('div');
+    text.innerText = `• ${i.nama} x${i.qty}`;
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.innerText = '✕';
+    del.style.border = 'none';
+    del.style.background = 'transparent';
+    del.style.cursor = 'pointer';
+    del.style.color = '#b00020';
+    del.style.fontSize = '16px';
+
+    del.addEventListener('click', ()=>{
+      cart.splice(index, 1);
+      renderCart();
+    });
+
+    row.appendChild(text);
+    row.appendChild(del);
+    list.appendChild(row);
   });
-  ringkasan.value = lines.join('\n');
+
   totalHarga.value = formatRupiah(total);
 }
 
@@ -256,7 +284,7 @@ document.getElementById('orderForm').addEventListener('submit', e=>{
 
   pesan += `%0A*Total:* ${totalHarga.value}`;
 
-  const noAdmin = '6285161967997'; // GANTI NOMOR ADMIN
+  const noAdmin = '62812XXXXXXXX'; // GANTI NOMOR ADMIN
   window.open(`https://wa.me/${noAdmin}?text=${pesan}`, '_blank');
 });
 </script>

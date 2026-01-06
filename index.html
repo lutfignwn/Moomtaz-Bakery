@@ -254,7 +254,8 @@ function renderCart(){
     total+=i.harga*i.qty;
     lines.push(`${i.nama} x${i.qty}`);
   });
-  ringkasan.value = lines.join('\n');
+  ringkasan.value = lines.join('
+');
   totalHarga.value = formatRupiah(total);
 }('input', hitungTotal);
 

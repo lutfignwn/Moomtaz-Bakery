@@ -1,147 +1,141 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Moomtaz Bakery</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {font-family: Arial, sans-serif; background:#fafafa; margin:0; padding:0}
-    header {text-align:center; padding:20px}
-    header img {width:120px; margin-top:10px}
-    .container {max-width:800px; margin:auto; padding:20px}
-    h2 {margin-top:30px}
-    .btn-group {display:flex; flex-wrap:wrap; gap:10px}
-    button.option {padding:10px 14px; border-radius:8px; border:1px solid #ccc; background:white; cursor:pointer}
-    button.option.active {background:#f59e0b; color:white; border-color:#f59e0b}
-    .summary {margin-top:30px; padding:15px; background:#fff3cd; border-radius:8px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moomtaz Bakery – Order</title>
+<style>
+body{font-family:Arial,sans-serif;background:#fdf6f0;margin:0;padding:20px}
+.card{max-width:720px;margin:auto;background:#fff;padding:24px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+h1{text-align:center;color:#6b3f2a;margin-bottom:6px}
+.subtitle{text-align:center;color:#777;margin-bottom:16px}
+img.logo{display:block;margin:0 auto 10px;max-width:180px;mix-blend-mode:multiply}
+label{display:block;margin-top:16px;font-size:14px}
+input,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin-top:6px}
+.btn-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.btn{padding:8px 14px;border-radius:20px;border:1px solid #ccc;background:#fafafa;cursor:pointer;font-size:13px}
+.btn.active{background:#6b3f2a;color:#fff;border-color:#6b3f2a}
+.btn.multi.active{background:#8d5a3b}
+button.submit{width:100%;padding:14px;margin-top:20px;border:none;border-radius:14px;background:#6b3f2a;color:#fff;font-size:16px;cursor:pointer}
+#ringkasan div{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+#ringkasan button{border:none;background:transparent;color:#b00020;font-size:16px;cursor:pointer}
+</style>
 </head>
 <body>
+<div class="card">
+<h1>Moomtaz Bakery</h1>
+<img src="Logo Bakery.JPG" class="logo">
+<div class="subtitle">Form Pemesanan</div>
 
-<header>
-  <h1>Moomtaz Bakery</h1>
-  <img src="logo.png" alt="Logo" />
-</header>
+<label>Nama</label>
+<input id="nama">
+<label>Tanggal Pesan</label>
+<input type="date" id="tanggal">
+<label>Alamat</label>
+<textarea id="alamat" rows="2"></textarea>
 
-<div class="container">
+<label>Jenis Produk</label>
+<div class="btn-group" id="jenis">
+ <div class="btn">Donut Reguler</div>
+ <div class="btn">Donut Little</div>
+ <div class="btn">Donut Mochi Reguler</div>
+ <div class="btn">Donut Mochi Little</div>
+ <div class="btn">Kopi</div>
+ <div class="btn">Roti</div>
+ <div class="btn">Bomboloni</div>
+ <div class="btn">Donut Tower</div>
+</div>
 
-<h2>Pilih Produk</h2>
-<div class="btn-group" id="produk"></div>
-
-<h2>Jumlah / Paket</h2>
+<label>Jumlah / Paket</label>
 <div class="btn-group" id="qty"></div>
 
-<h2>Pilih Varian (bebas)</h2>
+<label>Varian (bebas pilih)</label>
 <div class="btn-group" id="varian"></div>
 
-<div class="summary" id="summary">Silakan pilih produk</div>
+<button id="add" class="submit" type="button">Tambah Pesanan</button>
 
+<label>Ringkasan</label>
+<div id="ringkasan"></div>
+
+<label>Total</label>
+<input id="total" readonly>
+
+<button class="submit" id="wa">Pesan via WhatsApp</button>
 </div>
 
 <script>
-// ================= DATA =================
-const produkList = [
-  "Donut Reguler",
-  "Donut Little",
-  "Donut Mochi Reguler",
-  "Donut Mochi Little"
-];
-
-const hargaPaketDonut = {
-  "Donut Reguler": {1:5000,2:10000,3:15000,4:20000,6:28000,12:55000},
-  "Donut Little": {1:3000,4:12000,5:15000,6:18000,9:27000,12:35000,20:58000},
-  "Donut Mochi Reguler": {1:10000},
-  "Donut Mochi Little": {2:15000}
+const hargaDonut={
+ 'Donut Reguler':{1:5000,2:10000,3:15000,4:20000,6:28000,12:55000},
+ 'Donut Little':{1:3000,4:12000,5:15000,6:18000,9:27000,12:35000,20:58000},
+ 'Donut Mochi Reguler':{1:10000},
+ 'Donut Mochi Little':{2:15000}
 };
 
-const varianDonut = [
-  "Black Cookies","Carnaval","Bloody Marry","Greentea Shot","Eclipse",
-  "Funfetti","Black Peanut","Floss","Cheese Attack","Black Forrest",
-  "Pinkle","Pinky Bloom","Poco Loco","Cookies n Cream","Voldemond",
-  "Red Flag","Love Choco","Nut Ur Type","Cappu Nut","Capp Of Love",
-  "Till I Miss U","Miss Ur Kies","Green Nut","Unicorn"
-];
+const varianDonut=["Black Cookies","Carnaval","Bloody Marry","Greentea Shot","Eclipse","Funfetti","Black Peanut","Floss","Cheese Attack","Black Forrest","Pinkle","Pinky Bloom","Poco Loco","Cookies n Cream","Voldemond","Red Flag","Love Choco","Nut Ur Type","Cappu Nut","Capp Of Love","Till I Miss U","Miss Ur Kies","Green Nut","Unicorn"];
+const varianMochi=["Choco Crunchy","Vanilla Cookie","Double Berrie","Cheezy Lotus"];
+const varianKopi={"Palm Sugar Latte - Single":12000,"Palm Sugar Latte - Double":15000};
+const varianRoti={"Roti Coklat":4000,"Roti Keju":4000,"Roti Strawberry":4000,"Roti Blueberry":4000,"Roti Coklat Keju":4000};
+const varianBomboloni={"Cokelat":5000,"Strawberry":5000,"Cream Cheese":5000,"Vanilla":5000,"Box 5 pcs":23000};
+const varianTower={"Uk 25x35":180000,"Uk 20x35":150000,"Uk 18x20":100000};
 
-// ================= STATE =================
-let produkAktif = null;
-let qtyAktif = null;
-let varianDipilih = [];
+let jenisAktif='',qtyAktif='',varianAktif=[],cart=[];
 
-// ================= UI INIT =================
-const produkDiv = document.getElementById("produk");
-const qtyDiv = document.getElementById("qty");
-const varianDiv = document.getElementById("varian");
-const summary = document.getElementById("summary");
+const jenis=document.getElementById('jenis'),qty=document.getElementById('qty'),varian=document.getElementById('varian');
 
-produkList.forEach(p => {
-  const b = document.createElement("button");
-  b.textContent = p;
-  b.className = "option";
-  b.onclick = () => pilihProduk(p,b);
-  produkDiv.appendChild(b);
-});
+jenis.onclick=e=>{
+ if(!e.target.classList.contains('btn'))return;
+ jenis.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+ e.target.classList.add('active');
+ jenisAktif=e.target.textContent;qty.innerHTML='';varian.innerHTML='';varianAktif=[];
 
-// ================= FUNCTIONS =================
-function pilihProduk(p,btn){
-  produkAktif = p;
-  qtyAktif = null;
-  varianDipilih = [];
-
-  document.querySelectorAll('#produk .option').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-
-  renderQty();
-  renderVarian();
-  updateSummary();
-}
-
-function renderQty(){
-  qtyDiv.innerHTML = '';
-  Object.keys(hargaPaketDonut[produkAktif]).forEach(q => {
-    const b = document.createElement('button');
-    b.textContent = q;
-    b.className = 'option';
-    b.onclick = ()=>{qtyAktif = q; document.querySelectorAll('#qty .option').forEach(x=>x.classList.remove('active')); b.classList.add('active'); updateSummary();}
-    qtyDiv.appendChild(b);
+ if(hargaDonut[jenisAktif]){
+  Object.keys(hargaDonut[jenisAktif]).forEach(q=>{
+   let b=document.createElement('div');b.className='btn';b.textContent=q;b.onclick=()=>{qtyAktif=q;qty.querySelectorAll('.btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};qty.appendChild(b);
   });
-}
-
-function renderVarian(){
-  varianDiv.innerHTML = '';
-  varianDonut.forEach(v=>{
-    const b = document.createElement('button');
-    b.textContent = v;
-    b.className = 'option';
-    b.onclick = ()=>{
-      if(varianDipilih.includes(v)){
-        varianDipilih = varianDipilih.filter(x=>x!==v);
-        b.classList.remove('active');
-      } else {
-        varianDipilih.push(v);
-        b.classList.add('active');
-      }
-      updateSummary();
-    }
-    varianDiv.appendChild(b);
+  (jenisAktif.includes('Mochi')?varianMochi:varianDonut).forEach(v=>{
+   let b=document.createElement('div');b.className='btn multi';b.textContent=v;b.onclick=()=>{b.classList.toggle('active')};varian.appendChild(b);
   });
+ }
+ else{
+  let data={Kopi:varianKopi,Roti:varianRoti,Bomboloni:varianBomboloni,'Donut Tower':varianTower}[jenisAktif];
+  Object.keys(data).forEach(v=>{
+   let b=document.createElement('div');b.className='btn';b.textContent=v;b.onclick=()=>{qtyAktif=v;varian.querySelectorAll('.btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};varian.appendChild(b);
+  });
+ }
+};
+
+document.getElementById('add').onclick=()=>{
+ if(!jenisAktif||!qtyAktif)return alert('Lengkapi pilihan');
+ let harga=0,nama='';
+ if(hargaDonut[jenisAktif]){
+  harga=hargaDonut[jenisAktif][qtyAktif];
+  if(!harga)return alert('Paket tidak tersedia');
+  let v=[...varian.querySelectorAll('.btn.active')].map(b=>b.textContent).join(', ');
+  nama=`${jenisAktif} (${v||'Bebas'}) Paket ${qtyAktif}`;
+ }
+ else{
+  let data={Kopi:varianKopi,Roti:varianRoti,Bomboloni:varianBomboloni,'Donut Tower':varianTower}[jenisAktif];
+  harga=data[qtyAktif];nama=`${jenisAktif} - ${qtyAktif}`;
+ }
+ cart.push({nama,harga});render();
+};
+
+function render(){
+ let t=0;const r=document.getElementById('ringkasan');r.innerHTML='';
+ cart.forEach((c,i)=>{
+  t+=c.harga;
+  let d=document.createElement('div');
+  d.innerHTML=`${i+1}. ${c.nama} <b>Rp ${c.harga.toLocaleString('id-ID')}</b>`;
+  let x=document.createElement('button');x.textContent='✕';x.onclick=()=>{cart.splice(i,1);render()};
+  d.appendChild(x);r.appendChild(d);
+ });
+ document.getElementById('total').value='Rp '+t.toLocaleString('id-ID');
 }
 
-function updateSummary(){
-  if(!produkAktif || !qtyAktif){
-    summary.innerHTML = 'Pilih produk dan jumlah';
-    return;
-  }
-
-  const harga = hargaPaketDonut[produkAktif][qtyAktif];
-
-  summary.innerHTML = `
-    <b>Produk:</b> ${produkAktif}<br>
-    <b>Jumlah:</b> ${qtyAktif}<br>
-    <b>Varian:</b> ${varianDipilih.length ? varianDipilih.join(', ') : 'Bebas'}<br>
-    <b>Total:</b> Rp ${harga.toLocaleString('id-ID')}
-  `;
-}
+document.getElementById('wa').onclick=()=>{
+ let msg=cart.map((c,i)=>`${i+1}. ${c.nama} = Rp ${c.harga.toLocaleString('id-ID')}`).join('%0A');
+ window.open(`https://wa.me/6285161967997?text=Halo Moomtaz Bakery%0A${msg}%0ATotal: ${document.getElementById('total').value}`,'_blank');
+};
 </script>
-
 </body>
 </html>

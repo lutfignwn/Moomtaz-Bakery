@@ -49,7 +49,7 @@ button.submit{width:100%;padding:14px;margin-top:20px;border:none;border-radius:
 <label>Jumlah / Paket</label>
 <div class="btn-group" id="qty"></div>
 
-<label>Varian (bebas pilih)</label>
+<label>Varian</label>
 <div class="btn-group" id="varian"></div>
 
 <button id="add" class="submit" type="button">Tambah Pesanan</button>
@@ -64,11 +64,15 @@ button.submit{width:100%;padding:14px;margin-top:20px;border:none;border-radius:
 </div>
 
 <script>
+// ===== DATA =====
 const hargaDonut={
  'Donut Reguler':{1:5000,2:10000,3:15000,4:20000,6:28000,12:55000},
- 'Donut Little':{1:3000,4:12000,5:15000,6:18000,9:27000,12:35000,20:58000},
- 'Donut Mochi Reguler':{1:10000},
- 'Donut Mochi Little':{2:15000}
+ 'Donut Little':{1:3000,4:12000,5:15000,6:18000,9:27000,12:35000,20:58000}
+};
+
+const hargaMochi={
+ 'Donut Mochi Reguler':10000,
+ 'Donut Mochi Little':15000 // khusus beli 2 pcs
 };
 
 const varianDonut=["Black Cookies","Carnaval","Bloody Marry","Greentea Shot","Eclipse","Funfetti","Black Peanut","Floss","Cheese Attack","Black Forrest","Pinkle","Pinky Bloom","Poco Loco","Cookies n Cream","Voldemond","Red Flag","Love Choco","Nut Ur Type","Cappu Nut","Capp Of Love","Till I Miss U","Miss Ur Kies","Green Nut","Unicorn"];
@@ -78,60 +82,124 @@ const varianRoti={"Roti Coklat":4000,"Roti Keju":4000,"Roti Strawberry":4000,"Ro
 const varianBomboloni={"Cokelat":5000,"Strawberry":5000,"Cream Cheese":5000,"Vanilla":5000,"Box 5 pcs":23000};
 const varianTower={"Uk 25x35":180000,"Uk 20x35":150000,"Uk 18x20":100000};
 
-let jenisAktif='',qtyAktif='',varianAktif=[],cart=[];
+let jenisAktif='',qtyAktif='',cart=[];
+const jenis=document.getElementById('jenis');
+const qty=document.getElementById('qty');
+const varian=document.getElementById('varian');
 
-const jenis=document.getElementById('jenis'),qty=document.getElementById('qty'),varian=document.getElementById('varian');
-
+// ===== PILIH JENIS =====
 jenis.onclick=e=>{
  if(!e.target.classList.contains('btn'))return;
  jenis.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
  e.target.classList.add('active');
- jenisAktif=e.target.textContent;qty.innerHTML='';varian.innerHTML='';varianAktif=[];
+ jenisAktif=e.target.textContent;
+ qty.innerHTML='';
+ varian.innerHTML='';
+ qtyAktif='';
 
+ // DONUT PAKET
  if(hargaDonut[jenisAktif]){
   Object.keys(hargaDonut[jenisAktif]).forEach(q=>{
-   let b=document.createElement('div');b.className='btn';b.textContent=q;b.onclick=()=>{qtyAktif=q;qty.querySelectorAll('.btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};qty.appendChild(b);
+   let b=document.createElement('div');
+   b.className='btn';
+   b.textContent=q;
+   b.onclick=()=>{
+    qtyAktif=q;
+    qty.querySelectorAll('.btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+   };
+   qty.appendChild(b);
   });
-  (jenisAktif.includes('Mochi')?varianMochi:varianDonut).forEach(v=>{
-   let b=document.createElement('div');b.className='btn multi';b.textContent=v;b.onclick=()=>{b.classList.toggle('active')};varian.appendChild(b);
+  varianDonut.forEach(v=>{
+   let b=document.createElement('div');
+   b.className='btn multi';
+   b.textContent=v;
+   b.onclick=()=>b.classList.toggle('active');
+   varian.appendChild(b);
   });
  }
+
+ // MOCHI TANPA PAKET
+ else if(hargaMochi[jenisAktif]){
+  if(jenisAktif==='Donut Mochi Little'){
+   let info=document.createElement('div');
+   info.style.fontSize='12px';
+   info.style.color='#777';
+   info.textContent='* Donut Mochi Little dijual per 2 pcs (Rp 15.000)';
+   qty.appendChild(info);
+  }
+  varianMochi.forEach(v=>{
+   let b=document.createElement('div');
+   b.className='btn multi';
+   b.textContent=v;
+   b.onclick=()=>b.classList.toggle('active');
+   varian.appendChild(b);
+  });
+ }
+
+ // PRODUK LAIN
  else{
   let data={Kopi:varianKopi,Roti:varianRoti,Bomboloni:varianBomboloni,'Donut Tower':varianTower}[jenisAktif];
   Object.keys(data).forEach(v=>{
-   let b=document.createElement('div');b.className='btn';b.textContent=v;b.onclick=()=>{qtyAktif=v;varian.querySelectorAll('.btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};varian.appendChild(b);
+   let b=document.createElement('div');
+   b.className='btn';
+   b.textContent=v;
+   b.onclick=()=>{
+    qtyAktif=v;
+    varian.querySelectorAll('.btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+   };
+   varian.appendChild(b);
   });
  }
 };
 
+// ===== TAMBAH PESANAN =====
 document.getElementById('add').onclick=()=>{
- if(!jenisAktif||!qtyAktif)return alert('Lengkapi pilihan');
+ if(!jenisAktif)return alert('Pilih produk');
  let harga=0,nama='';
+
  if(hargaDonut[jenisAktif]){
+  if(!qtyAktif)return alert('Pilih paket');
   harga=hargaDonut[jenisAktif][qtyAktif];
-  if(!harga)return alert('Paket tidak tersedia');
   let v=[...varian.querySelectorAll('.btn.active')].map(b=>b.textContent).join(', ');
   nama=`${jenisAktif} (${v||'Bebas'}) Paket ${qtyAktif}`;
  }
- else{
-  let data={Kopi:varianKopi,Roti:varianRoti,Bomboloni:varianBomboloni,'Donut Tower':varianTower}[jenisAktif];
-  harga=data[qtyAktif];nama=`${jenisAktif} - ${qtyAktif}`;
+ else if(hargaMochi[jenisAktif]){
+  let v=[...varian.querySelectorAll('.btn.active')].map(b=>b.textContent).join(', ');
+  harga=hargaMochi[jenisAktif];
+  nama=`${jenisAktif} (${v||'Bebas'})`;
  }
- cart.push({nama,harga});render();
+ else{
+  if(!qtyAktif)return alert('Pilih item');
+  let data={Kopi:varianKopi,Roti:varianRoti,Bomboloni:varianBomboloni,'Donut Tower':varianTower}[jenisAktif];
+  harga=data[qtyAktif];
+  nama=`${jenisAktif} - ${qtyAktif}`;
+ }
+
+ cart.push({nama,harga});
+ render();
 };
 
+// ===== RENDER CART =====
 function render(){
- let t=0;const r=document.getElementById('ringkasan');r.innerHTML='';
+ let total=0;
+ const r=document.getElementById('ringkasan');
+ r.innerHTML='';
  cart.forEach((c,i)=>{
-  t+=c.harga;
+  total+=c.harga;
   let d=document.createElement('div');
   d.innerHTML=`${i+1}. ${c.nama} <b>Rp ${c.harga.toLocaleString('id-ID')}</b>`;
-  let x=document.createElement('button');x.textContent='✕';x.onclick=()=>{cart.splice(i,1);render()};
-  d.appendChild(x);r.appendChild(d);
+  let x=document.createElement('button');
+  x.textContent='✕';
+  x.onclick=()=>{cart.splice(i,1);render();};
+  d.appendChild(x);
+  r.appendChild(d);
  });
- document.getElementById('total').value='Rp '+t.toLocaleString('id-ID');
+ document.getElementById('total').value='Rp '+total.toLocaleString('id-ID');
 }
 
+// ===== WHATSAPP =====
 document.getElementById('wa').onclick=()=>{
  let msg=cart.map((c,i)=>`${i+1}. ${c.nama} = Rp ${c.harga.toLocaleString('id-ID')}`).join('%0A');
  window.open(`https://wa.me/6285161967997?text=Halo Moomtaz Bakery%0A${msg}%0ATotal: ${document.getElementById('total').value}`,'_blank');

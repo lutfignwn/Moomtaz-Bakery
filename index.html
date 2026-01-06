@@ -22,7 +22,7 @@
 <body>
 <div class="card">
 <h1>Moomtaz Bakery</h1>
-<img src="Logo Bakery.PNG" alt="Moomtaz Bakery Logo" style="display:block;margin:10px auto 6px;max-width:220px;width:100%;height:auto;background:transparent;mix-blend-mode:multiply;">
+<img src="Logo Bakery.JPG" alt="Moomtaz Bakery Logo" style="display:block;margin:10px auto 6px;max-width:220px;width:100%;height:auto;background:transparent;mix-blend-mode:multiply;">
 <div class="subtitle">Form Pemesanan</div>
 <form id="orderForm">
 
@@ -66,7 +66,7 @@
 <button type="button" id="addItem" class="submit secondary">Tambah ke Pesanan</button>
 
 <label>Ringkasan Pesanan</label>
-<textarea id="ringkasan" rows="6" readonly></textarea>
+<div id="ringkasan" style="border:1px solid #ddd;border-radius:12px;padding:10px;min-height:80px;font-size:14px"></div>
 
 <label>Total Harga</label>
 <input id="total" readonly>
@@ -155,20 +155,51 @@ document.getElementById('addItem').onclick=()=>{
 };
 
 function render(){
- let total=0;let text='';
+ let total=0;
+ const ring=document.getElementById('ringkasan');
+ ring.innerHTML='';
  cart.forEach((i,idx)=>{
   total+=i.harga*i.qty;
-  text+=`${idx+1}. ${i.nama} x${i.qty} – ${rupiah(i.harga*i.qty)}\n`;
+  const row=document.createElement('div');
+  row.style.display='flex';
+  row.style.justifyContent='space-between';
+  row.style.alignItems='center';
+  row.style.marginBottom='6px';
+
+  const text=document.createElement('span');
+  text.textContent=`${idx+1}. ${i.nama} x${i.qty} – ${rupiah(i.harga*i.qty)}`;
+
+  const del=document.createElement('button');
+  del.textContent='✕';
+  del.style.border='none';
+  del.style.background='transparent';
+  del.style.color='#b00020';
+  del.style.fontSize='16px';
+  del.style.cursor='pointer';
+  del.onclick=()=>{cart.splice(idx,1);render();};
+
+  row.appendChild(text);
+  row.appendChild(del);
+  ring.appendChild(row);
  });
- document.getElementById('ringkasan').value=text;
  document.getElementById('total').value=rupiah(total);
+}
+
+// ===== HAPUS ITEM =====
+document.getElementById('ringkasan').onclick=e=>{
+ const sel=window.getSelection().toString();
+ if(sel.startsWith('hapus:')){
+  const idx=parseInt(sel.replace('hapus:',''));
+  cart.splice(idx,1);
+  render();
+ }
 }
 
 // ===== WHATSAPP =====
 document.getElementById('orderForm').onsubmit=e=>{
  e.preventDefault();
  const msg=`Halo Moomtaz Bakery%0A%0ANama: ${nama.value}%0ATanggal: ${tanggal.value}%0AAlamat: ${alamat.value}%0A%0APesanan:%0A${ringkasan.value.replace(/\n/g,'%0A')}%0ATotal: ${total.value}`;
- window.open(`https://wa.me/6285121123354?text=${msg}`,'_blank');
+ window.open(`https://wa.me/6285161967997?text=${msg}`,'_blank');
 };
 </script>
 </body>

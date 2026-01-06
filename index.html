@@ -202,7 +202,7 @@ function render(){
 // ===== WHATSAPP =====
 document.getElementById('wa').onclick=()=>{
  let msg=cart.map((c,i)=>`${i+1}. ${c.nama} = Rp ${c.harga.toLocaleString('id-ID')}`).join('%0A');
- window.open(`https://wa.me/6285161967997?text=Halo Moomtaz Bakery%0A${msg}%0ATotal: ${document.getElementById('total').value}`,'_blank');
+ window.open(`https://wa.me/6285161967997?text=Halo Moomtaz Bakery, Aku mau pesan%0A${msg}%0ATotal: ${document.getElementById('total').value}`,'_blank');
 };
 </script>
 </body>

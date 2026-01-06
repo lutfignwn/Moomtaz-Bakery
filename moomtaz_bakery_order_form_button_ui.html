@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moomtaz Bakery – Order Form</title>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#fdf6f0;
+      padding:20px;
+      display:flex;
+      justify-content:center;
+    }
+    .card{
+      background:#fff;
+      max-width:560px;
+      width:100%;
+      padding:22px;
+      border-radius:16px;
+      box-shadow:0 10px 25px rgba(0,0,0,.08);
+    }
+    h1{
+      text-align:center;
+      margin-bottom:6px;
+      color:#6b3f2a;
+    }
+    .subtitle{
+      text-align:center;
+      font-size:14px;
+      color:#777;
+      margin-bottom:14px;
+    }
+    .icons{
+      text-align:center;
+      margin-bottom:18px;
+    }
+    .icons img{
+      width:48px;
+      margin:0 6px;
+    }
+    label{
+      font-size:14px;
+      margin-top:14px;
+      display:block;
+    }
+    input, textarea{
+      width:100%;
+      padding:10px;
+      margin-top:6px;
+      border-radius:10px;
+      border:1px solid #ddd;
+    }
+    .btn-group{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
+    }
+    .btn{
+      padding:8px 12px;
+      border-radius:20px;
+      border:1px solid #ccc;
+      background:#fafafa;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .btn.active{
+      background:#6b3f2a;
+      color:#fff;
+      border-color:#6b3f2a;
+    }
+    .btn.multi.active{
+      background:#8d5a3b;
+    }
+    button.submit{
+      margin-top:22px;
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:12px;
+      background:#6b3f2a;
+      color:#fff;
+      font-size:16px;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Moomtaz Bakery</h1>
+    <div class="subtitle">Form Pemesanan</div>
+
+    <div class="icons">
+      <img src="https://cdn-icons-png.flaticon.com/512/3514/3514491.png">
+      <img src="https://cdn-icons-png.flaticon.com/512/1047/1047462.png">
+    </div>
+
+    <form id="orderForm">
+      <label>Nama</label>
+      <input name="nama" required>
+
+      <label>Tanggal Pesan</label>
+      <input type="date" name="tanggal" required>
+
+      <label>Alamat</label>
+      <textarea name="alamat" rows="2" required></textarea>
+
+      <label>Quantity (jumlah item per varian)</label>
+      <input type="number" id="qtyGlobal" min="1" value="1">
+
+      <label>Metode Pemesanan</label>
+      <div class="btn-group" data-name="pemesanan">
+        <div class="btn">Delivery</div>
+        <div class="btn">Pick Up</div>
+      </div>
+
+      <label>Metode Pembayaran</label>
+      <div class="btn-group" data-name="pembayaran">
+        <div class="btn">Cash</div>
+        <div class="btn">Cashless</div>
+      </div>
+
+      <label>Jenis Produk</label>
+      <div class="btn-group" id="jenisProduk">
+        <div class="btn">Donut</div>
+        <div class="btn">Kopi</div>
+        <div class="btn">Roti</div>
+      </div>
+
+      <label>Varian (bisa pilih lebih dari satu)</label>
+      <div class="btn-group" id="varianProduk"></div>
+
+      <label>Total Harga</label>
+      <input id="totalHarga" readonly placeholder="Rp 0">
+
+      <label>Ringkasan Pesanan</label>
+      <textarea id="ringkasan" rows="3" readonly></textarea>
+
+      <button class="submit" type="submit">Kirim Pesanan</button>
+    </form>
+  </div>
+
+<script>
+const varianData = {
+  Donut:["Black Cookies","Carnaval","Bloody Marry","Greentea Shot","Eclipse","Funfetti","Black Peanut","Floss","Cheese Attack","Black Forrest","Pinkle","Pinky Bloom","Poco Loco","Cookies n Cream","Voldemond","Red Flag","Love Choco","Nut Ur Type","Cappu Nut","Capp Of Love","Till I Miss U","Miss Ur Kies","Green Nut","Unicorn"],
+  Kopi:["Palm Sugar Latte - Single","Palm Sugar Latte - Double","Salted Caramel Latte - Single","Salted Caramel Latte - Double","Butterscotch Latte - Single","Butterscotch Latte - Double","Caramel Latte - Single","Caramel Latte - Double","Vanilla Latte - Single","Vanilla Latte - Double","Hazelnut Latte - Single","Hazelnut Latte - Double"],
+  Roti:["Roti Cokelat","Roti Stroberi","Roti Bluberi","Roti Keju","Roti Coklat Keju"],
+  Bomboloni:["Cokelat","Strawberry","Cream Cheese","Vanilla"],
+  Mochi:["Choco Crunchy","Vanilla Cookie","Double Berrie","Cheezy Lotus"]
+};
+
+const priceData = {
+  Kopi:{Single:12000,Double:15000},
+  Roti:4000,
+  Bomboloni:{1:5000,5:23000},
+  MochiReguler:{1:10000},
+  MochiLittle:{2:15000}
+};
+
+function activateButton(group, btn){
+  if(btn.classList.contains('multi')){
+    btn.classList.toggle('active');
+  } else {
+    group.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+}
+
+document.querySelectorAll('.btn-group').forEach(group=>{
+  group.addEventListener('click', e=>{
+    if(!e.target.classList.contains('btn')) return;
+    activateButton(group, e.target);
+  });
+});
+
+const jenisGroup = document.getElementById('jenisProduk');
+const varianGroup = document.getElementById('varianProduk');
+
+jenisGroup.addEventListener('click', e=>{
+  if(!e.target.classList.contains('btn')) return;
+  varianGroup.innerHTML='';
+  document.getElementById('ringkasan').value='';
+  document.getElementById('totalHarga').value='Rp 0';
+  const jenis = e.target.textContent;
+  varianData[jenis].forEach(v=>{
+    const b=document.createElement('div');
+    b.className='btn multi';
+    b.textContent=v;
+    varianGroup.appendChild(b);
+  });
+});
+    b.className='btn multi';
+    b.textContent=v;
+    varianGroup.appendChild(b);
+  });
+});
+
+function formatRupiah(num){return 'Rp ' + num.toLocaleString('id-ID');}
+
+function hitungTotal(){
+  let total=0; let list=[];
+  const qty=parseInt(document.getElementById('qtyGlobal').value||1);
+  document.querySelectorAll('#varianProduk .btn.active').forEach(b=>{
+    const txt=b.textContent;
+    if(txt.includes('Single')) total+=priceData.Kopi.Single*qty;
+    else if(txt.includes('Double')) total+=priceData.Kopi.Double*qty;
+    else total+=priceData.Roti*qty;
+    list.push(txt+' x'+qty);
+  });
+  totalHarga.value=formatRupiah(total);
+  ringkasan.value=list.join(', ');
+}
+
+varianGroup.addEventListener('click',()=>setTimeout(hitungTotal,100));
+
+orderForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  alert('Pesanan terkirim! Total: '+totalHarga.value);
+});
+  alert('Pesanan tersimpan. Total: ' + totalHarga.value);
+});
+  alert('Form siap dihubungkan ke Google Spreadsheet / Excel');
+});
+</script>
+</body>
+</html>

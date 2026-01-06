@@ -167,14 +167,25 @@ function activateButton(group, btn){
   }
 }
 
-document.querySelectorAll('.btn-group').forEach(group=>{
+// Handler untuk button SINGLE pilih (pemesanan & pembayaran)
+document.querySelectorAll('.btn-group[data-name]').forEach(group=>{
   group.addEventListener('click', e=>{
     if(!e.target.classList.contains('btn')) return;
-    activateButton(group, e.target);
+    group.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active');
   });
+});
 });
 
 const jenisGroup = document.getElementById('jenisProduk');
+
+// pastikan tombol jenis produk bisa diklik
+jenisGroup.querySelectorAll('.btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    jenisGroup.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
 const varianGroup = document.getElementById('varianProduk');
 
 jenisGroup.addEventListener('click', e=>{

@@ -5,288 +5,151 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Moomtaz Bakery – Order Form</title>
   <style>
-    body{
-      font-family: Arial, sans-serif;
-      background:#fdf6f0;
-      padding:20px;
-      display:flex;
-      justify-content:center;
-    }
-    .card{
-      background:#fff;
-      max-width:560px;
-      width:100%;
-      padding:22px;
-      border-radius:16px;
-      box-shadow:0 10px 25px rgba(0,0,0,.08);
-    }
-    h1{
-      text-align:center;
-      margin-bottom:6px;
-      color:#6b3f2a;
-    }
-    .subtitle{
-      text-align:center;
-      font-size:14px;
-      color:#777;
-      margin-bottom:14px;
-    }
-    .icons{
-      text-align:center;
-      margin-bottom:18px;
-    }
-    .icons img{
-      width:48px;
-      margin:0 6px;
-    }
-    label{
-      font-size:14px;
-      margin-top:14px;
-      display:block;
-    }
-    input, textarea{
-      width:100%;
-      padding:10px;
-      margin-top:6px;
-      border-radius:10px;
-      border:1px solid #ddd;
-    }
-    .btn-group{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:8px;
-    }
-    .btn{
-      padding:8px 12px;
-      border-radius:20px;
-      border:1px solid #ccc;
-      background:#fafafa;
-      cursor:pointer;
-      font-size:13px;
-      user-select:none;
-    }
-    .btn.active{
-      background:#6b3f2a;
-      color:#fff;
-      border-color:#6b3f2a;
-    }
-    .btn.multi.active{
-      background:#8d5a3b;
-    }
-    button.submit{
-      margin-top:22px;
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:12px;
-      background:#6b3f2a;
-      color:#fff;
-      font-size:16px;
-      cursor:pointer;
-    }
+    body{font-family:Arial,sans-serif;background:#fdf6f0;padding:20px;display:flex;justify-content:center}
+    .card{background:#fff;max-width:560px;width:100%;padding:22px;border-radius:18px;box-shadow:0 10px 25px rgba(0,0,0,.08)}
+    h1{text-align:center;margin-bottom:4px;color:#6b3f2a}
+    .subtitle{text-align:center;font-size:14px;color:#777;margin-bottom:16px}
+    label{font-size:14px;margin-top:14px;display:block}
+    input,textarea{width:100%;padding:10px;margin-top:6px;border-radius:10px;border:1px solid #ddd}
+    .btn-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .btn{padding:8px 14px;border-radius:20px;border:1px solid #ccc;background:#fafafa;cursor:pointer;font-size:13px}
+    .btn.active{background:#6b3f2a;color:#fff;border-color:#6b3f2a}
+    .btn.multi.active{background:#8d5a3b}
+    button.submit{margin-top:18px;width:100%;padding:14px;border:none;border-radius:14px;background:#6b3f2a;color:#fff;font-size:16px;cursor:pointer}
+    .secondary{background:#8d5a3b}
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Moomtaz Bakery</h1>
-    <div class="subtitle">Form Pemesanan</div>
+<div class="card">
+<h1>Moomtaz Bakery</h1>
+<div class="subtitle">Form Pemesanan</div>
+<form id="orderForm">
 
-    <div class="icons">
-      <img src="https://cdn-icons-png.flaticon.com/512/3514/3514491.png">
-      <img src="https://cdn-icons-png.flaticon.com/512/1047/1047462.png">
-    </div>
+<label>Nama</label>
+<input id="nama" required>
 
-    <form id="orderForm">
-      <label>Nama</label>
-      <input name="nama" required>
+<label>Tanggal Pesan</label>
+<input type="date" id="tanggal" required>
 
-      <label>Tanggal Pesan</label>
-      <input type="date" name="tanggal" required>
+<label>Alamat</label>
+<textarea id="alamat" rows="2" required></textarea>
 
-      <label>Alamat</label>
-      <textarea name="alamat" rows="2" required></textarea>
+<label>Metode Pemesanan</label>
+<div class="btn-group" data-single="metode">
+  <div class="btn">Delivery</div>
+  <div class="btn">Pick Up</div>
+</div>
 
-      <label>Quantity (jumlah item per varian)</label>
-      <input type="number" id="qtyGlobal" min="1" value="1">
+<label>Metode Pembayaran</label>
+<div class="btn-group" data-single="bayar">
+  <div class="btn">Cash</div>
+  <div class="btn">Cashless</div>
+</div>
 
-      <label>Metode Pemesanan</label>
-      <div class="btn-group" data-name="pemesanan">
-        <div class="btn">Delivery</div>
-        <div class="btn">Pick Up</div>
-      </div>
+<label>Jenis Produk</label>
+<div class="btn-group" id="jenisProduk">
+  <div class="btn">Donut</div>
+  <div class="btn">Kopi</div>
+  <div class="btn">Roti</div>
+  <div class="btn">Bomboloni</div>
+  <div class="btn">Mochi</div>
+</div>
 
-      <label>Metode Pembayaran</label>
-      <div class="btn-group" data-name="pembayaran">
-        <div class="btn">Cash</div>
-        <div class="btn">Cashless</div>
-      </div>
+<label>Jumlah</label>
+<input type="number" id="qty" value="1" min="1">
 
-      <label>Jenis Produk</label>
-      <div class="btn-group" id="jenisProduk">
-        <div class="btn">Donut</div>
-        <div class="btn">Kopi</div>
-        <div class="btn">Roti</div>
-        <div class="btn">Bomboloni</div>
-        <div class="btn">Mochi</div>
-      </div>
+<label>Varian (bisa pilih lebih dari satu)</label>
+<div class="btn-group" id="varianProduk"></div>
 
-      <label>Varian (bisa pilih lebih dari satu)</label>
-      <div class="btn-group" id="varianProduk"></div>
+<button type="button" id="addItem" class="submit secondary">Tambah ke Pesanan</button>
 
-      <button type="button" id="addItem" class="submit" style="background:#8d5a3b;margin-top:12px">Tambah ke Pesanan</button>
+<label>Ringkasan Pesanan</label>
+<textarea id="ringkasan" rows="5" readonly></textarea>
 
-      <label>Total Harga</label>
-      <input id="totalHarga" readonly placeholder="Rp 0">
+<label>Total Harga</label>
+<input id="total" readonly>
 
-      <label>Ringkasan Pesanan</label>
-      <div id="ringkasanList" style="margin-top:8px"></div>
-
-      <button class="submit" type="submit">Kirim Pesanan via WhatsApp</button>
-    </form>
-  </div>
+<button type="submit" class="submit">Pesan via WhatsApp</button>
+</form>
+</div>
 
 <script>
-// ===== UTIL =====
-function formatRupiah(num){return 'Rp ' + num.toLocaleString('id-ID');}
-
 // ===== DATA =====
-const varianData = {
-  Donut:["Black Cookies","Carnaval","Bloody Marry","Greentea Shot","Eclipse","Funfetti","Black Peanut","Floss","Cheese Attack","Black Forrest","Pinkle","Pinky Bloom","Poco Loco","Cookies n Cream","Voldemond","Red Flag","Love Choco","Nut Ur Type","Cappu Nut","Capp Of Love","Till I Miss U","Miss Ur Kies","Green Nut","Unicorn"],
-  Kopi:["Palm Sugar Latte - Single","Palm Sugar Latte - Double","Salted Caramel Latte - Single","Salted Caramel Latte - Double","Butterscotch Latte - Single","Butterscotch Latte - Double","Caramel Latte - Single","Caramel Latte - Double","Vanilla Latte - Single","Vanilla Latte - Double","Hazelnut Latte - Single","Hazelnut Latte - Double"],
-  Roti:["Roti Cokelat","Roti Stroberi","Roti Bluberi","Roti Keju","Roti Coklat Keju"],
-  Bomboloni:["Cokelat","Strawberry","Cream Cheese","Vanilla"],
-  Mochi:["Choco Crunchy","Vanilla Cookie","Double Berrie","Cheezy Lotus"]
-};
+const varianData={
+Donut:["Mix Donut Box"],
+Kopi:["Palm Sugar Latte - Single","Palm Sugar Latte - Double"],
+Roti:["Roti Coklat","Roti Keju"],
+Bomboloni:["Bomboloni Box"],
+Mochi:["Mochi Box"]};
 
-const priceData = {
-  Kopi:{Single:12000,Double:15000},
-  Roti:4000
-};
+const hargaData={
+"Mix Donut Box":28000,
+"Palm Sugar Latte - Single":12000,
+"Palm Sugar Latte - Double":15000,
+"Roti Coklat":4000,
+"Roti Keju":4000,
+"Bomboloni Box":25000,
+"Mochi Box":20000};
 
-// ===== ELEMENT =====
-const jenisGroup = document.getElementById('jenisProduk');
-const varianGroup = document.getElementById('varianProduk');
-const totalHarga = document.getElementById('totalHarga');
-const ringkasan = document.getElementById('ringkasan');
-const qtyInput = document.getElementById('qtyGlobal');
+// ===== UTIL =====
+const rupiah=n=>"Rp "+n.toLocaleString('id-ID');
+let cart=[];
+let jenisAktif="";
 
 // ===== SINGLE SELECT =====
-document.querySelectorAll('.btn-group[data-name]').forEach(group=>{
-  group.addEventListener('click', e=>{
-    if(!e.target.classList.contains('btn')) return;
-    group.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
-    e.target.classList.add('active');
-  });
+document.querySelectorAll('[data-single]').forEach(g=>{
+ g.onclick=e=>{
+  if(!e.target.classList.contains('btn'))return;
+  g.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+ };
 });
-
-// ===== CART =====
-let cart = [];
 
 // ===== JENIS PRODUK =====
-jenisGroup.addEventListener('click', e=>{
-  if(!e.target.classList.contains('btn')) return;
-
-  jenisGroup.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
-  e.target.classList.add('active');
-
-  varianGroup.innerHTML = '';
-
-  const jenis = e.target.textContent.trim();
-  varianData[jenis].forEach(v=>{
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'btn multi';
-    btn.textContent = v;
-    varianGroup.appendChild(btn);
-  });
-});
+document.getElementById('jenisProduk').onclick=e=>{
+ if(!e.target.classList.contains('btn'))return;
+ document.querySelectorAll('#jenisProduk .btn').forEach(b=>b.classList.remove('active'));
+ e.target.classList.add('active');
+ jenisAktif=e.target.textContent;
+ const vg=document.getElementById('varianProduk');
+ vg.innerHTML='';
+ varianData[jenisAktif].forEach(v=>{
+  const b=document.createElement('div');
+  b.className='btn multi';b.textContent=v;vg.appendChild(b);
+ });
+};
 
 // ===== VARIAN MULTI =====
-varianGroup.addEventListener('click', e=>{
-  if(!e.target.classList.contains('btn')) return;
-  e.target.classList.toggle('active');
-});
+document.getElementById('varianProduk').onclick=e=>{
+ if(e.target.classList.contains('btn'))e.target.classList.toggle('active');
+};
 
-// ===== TAMBAH KE CART =====
-document.getElementById('addItem').addEventListener('click', ()=>{
-  const qty = parseInt(qtyInput.value || 1);
-  document.querySelectorAll('#varianProduk .btn.active').forEach(b=>{
-    const txt = b.textContent;
-    let harga = priceData.Roti;
-    if(txt.includes('Single')) harga = priceData.Kopi.Single;
-    if(txt.includes('Double')) harga = priceData.Kopi.Double;
-    cart.push({nama:txt, qty, harga});
-  });
-  renderCart();
-  varianGroup.innerHTML = '';
-});
+// ===== ADD ITEM =====
+document.getElementById('addItem').onclick=()=>{
+ const qty=parseInt(document.getElementById('qty').value);
+ document.querySelectorAll('#varianProduk .btn.active').forEach(b=>{
+  cart.push({nama:b.textContent,qty,harga:hargaData[b.textContent]});
+ });
+ render();
+ document.getElementById('varianProduk').innerHTML='';
+};
 
-function renderCart(){
-  let total = 0;
-  const list = document.getElementById('ringkasanList');
-  list.innerHTML = '';
-
-  cart.forEach((i, index)=>{
-    total += i.harga * i.qty;
-
-    const row = document.createElement('div');
-    row.style.display = 'flex';
-    row.style.justifyContent = 'space-between';
-    row.style.alignItems = 'center';
-    row.style.marginBottom = '6px';
-
-    const text = document.createElement('div');
-    text.innerText = `• ${i.nama} x${i.qty}`;
-
-    const del = document.createElement('button');
-    del.type = 'button';
-    del.innerText = '✕';
-    del.style.border = 'none';
-    del.style.background = 'transparent';
-    del.style.cursor = 'pointer';
-    del.style.color = '#b00020';
-    del.style.fontSize = '16px';
-
-    del.addEventListener('click', ()=>{
-      cart.splice(index, 1);
-      renderCart();
-    });
-
-    row.appendChild(text);
-    row.appendChild(del);
-    list.appendChild(row);
-  });
-
-  totalHarga.value = formatRupiah(total);
+function render(){
+ let total=0;let text='';
+ cart.forEach((i,idx)=>{
+  total+=i.harga*i.qty;
+  text+=`${idx+1}. ${i.nama} x${i.qty} – ${rupiah(i.harga*i.qty)}\n`;
+ });
+ document.getElementById('ringkasan').value=text;
+ document.getElementById('total').value=rupiah(total);
 }
 
 // ===== WHATSAPP =====
-document.getElementById('orderForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  if(cart.length === 0){ alert('Pesanan masih kosong'); return; }
-
-  const nama = document.querySelector('input[name="nama"]').value;
-  const alamat = document.querySelector('textarea[name="alamat"]').value;
-  const metodePesan = document.querySelector('[data-name="pemesanan"] .active')?.innerText || '-';
-  const metodeBayar = document.querySelector('[data-name="pembayaran"] .active')?.innerText || '-';
-
-  let pesan = `*PESANAN MOOMTAZ BAKERY*%0A%0A`;
-  pesan += `Nama: ${nama}%0A`;
-  pesan += `Alamat: ${alamat}%0A`;
-  pesan += `Metode Pesan: ${metodePesan}%0A`;
-  pesan += `Metode Bayar: ${metodeBayar}%0A%0A`;
-  pesan += `*Detail Pesanan:*%0A`;
-
-  cart.forEach(item=>{
-    pesan += `- ${item.nama} x${item.qty}%0A`;
-  });
-
-  pesan += `%0A*Total:* ${totalHarga.value}`;
-
-  const noAdmin = '62812XXXXXXXX'; // GANTI NOMOR ADMIN
-  window.open(`https://wa.me/${noAdmin}?text=${pesan}`, '_blank');
-});
+document.getElementById('orderForm').onsubmit=e=>{
+ e.preventDefault();
+ const msg=`Halo Moomtaz Bakery%0A%0ANama: ${nama.value}%0ATanggal: ${tanggal.value}%0AAlamat: ${alamat.value}%0A%0APesanan:%0A${ringkasan.value.replace(/\n/g,'%0A')}%0ATotal: ${total.value}`;
+ window.open(`https://wa.me/6281234567890?text=${msg}`,'_blank');
+};
 </script>
 </body>
 </html>

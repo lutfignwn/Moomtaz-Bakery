@@ -124,8 +124,13 @@
       <label>Jenis Produk</label>
       <div class="btn-group" id="jenisProduk">
         <div class="btn">Donut</div>
+        <div class="btn">Kopi</div>
+        <div class="btn">Roti</div>
         <div class="btn">Bomboloni</div>
-        <div class="btn">Donut Mochi</div>
+        <div class="btn">Mochi</div>
+      </div>
+
+      <button type="button" id="addItem" class="submit" style="background:#8d5a3b;margin-top:12px">Tambah ke Pesanan</button>
         <div class="btn">Kopi</div>
         <div class="btn">Roti</div>
       </div>
@@ -136,8 +141,8 @@
       <label>Total Harga</label>
       <input id="totalHarga" readonly placeholder="Rp 0">
 
-      <label>Ringkasan Pesanan</label>
-      <textarea id="ringkasan" rows="3" readonly></textarea>
+      <label>Ringkasan Pesanan (bisa lebih dari 1 produk)</label>
+      <textarea id="ringkasan" rows="4" readonly></textarea>
 
       <button class="submit" type="submit">Kirim Pesanan</button>
     </form>
@@ -209,27 +214,49 @@ varianGroup.addEventListener('click', e=>{
   hitungTotal();
 });
 
-// ===== HITUNG TOTAL =====
-function hitungTotal(){
-  let total = 0;
-  let list = [];
-  const qty = parseInt(qtyInput.value || 1);
+// ===== HITUNG TOTAL ITEM (sementara) =====
+let cart = [];
 
+function hitungSementara(){
+  let total = 0;
+  const qty = parseInt(qtyInput.value || 1);
   document.querySelectorAll('#varianProduk .btn.active').forEach(b=>{
     const txt = b.textContent;
-
     if(txt.includes('Single')) total += priceData.Kopi.Single * qty;
     else if(txt.includes('Double')) total += priceData.Kopi.Double * qty;
     else total += priceData.Roti * qty;
-
-    list.push(txt + ' x' + qty);
   });
-
   totalHarga.value = formatRupiah(total);
-  ringkasan.value = list.join(', ');
 }
 
-qtyInput.addEventListener('input', hitungTotal);
+varianGroup.addEventListener('click', hitungSementara);
+qtyInput.addEventListener('input', hitungSementara);
+
+// ===== TAMBAH KE PESANAN =====
+document.getElementById('addItem').addEventListener('click', ()=>{
+  const qty = parseInt(qtyInput.value || 1);
+  document.querySelectorAll('#varianProduk .btn.active').forEach(b=>{
+    const txt = b.textContent;
+    let harga = priceData.Roti;
+    if(txt.includes('Single')) harga = priceData.Kopi.Single;
+    if(txt.includes('Double')) harga = priceData.Kopi.Double;
+    cart.push({nama:txt, qty, harga});
+  });
+  renderCart();
+  varianGroup.innerHTML='';
+  totalHarga.value='Rp 0';
+});
+
+function renderCart(){
+  let total=0;
+  let lines=[];
+  cart.forEach(i=>{
+    total+=i.harga*i.qty;
+    lines.push(`${i.nama} x${i.qty}`);
+  });
+  ringkasan.value = lines.join('\n');
+  totalHarga.value = formatRupiah(total);
+}('input', hitungTotal);
 
 // ===== SUBMIT =====
 document.getElementById('orderForm').addEventListener('submit', e=>{

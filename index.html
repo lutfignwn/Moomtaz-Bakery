@@ -64,6 +64,7 @@
       background:#fafafa;
       cursor:pointer;
       font-size:13px;
+      user-select:none;
     }
     .btn.active{
       background:#6b3f2a;
@@ -130,21 +131,18 @@
         <div class="btn">Mochi</div>
       </div>
 
-      <button type="button" id="addItem" class="submit" style="background:#8d5a3b;margin-top:12px">Tambah ke Pesanan</button>
-        <div class="btn">Kopi</div>
-        <div class="btn">Roti</div>
-      </div>
-
       <label>Varian (bisa pilih lebih dari satu)</label>
       <div class="btn-group" id="varianProduk"></div>
+
+      <button type="button" id="addItem" class="submit" style="background:#8d5a3b;margin-top:12px">Tambah ke Pesanan</button>
 
       <label>Total Harga</label>
       <input id="totalHarga" readonly placeholder="Rp 0">
 
-      <label>Ringkasan Pesanan (bisa lebih dari 1 produk)</label>
+      <label>Ringkasan Pesanan</label>
       <textarea id="ringkasan" rows="4" readonly></textarea>
 
-      <button class="submit" type="submit">Kirim Pesanan</button>
+      <button class="submit" type="submit">Kirim Pesanan via WhatsApp</button>
     </form>
   </div>
 
@@ -173,7 +171,7 @@ const totalHarga = document.getElementById('totalHarga');
 const ringkasan = document.getElementById('ringkasan');
 const qtyInput = document.getElementById('qtyGlobal');
 
-// ===== SINGLE SELECT (metode) =====
+// ===== SINGLE SELECT =====
 document.querySelectorAll('.btn-group[data-name]').forEach(group=>{
   group.addEventListener('click', e=>{
     if(!e.target.classList.contains('btn')) return;
@@ -182,22 +180,19 @@ document.querySelectorAll('.btn-group[data-name]').forEach(group=>{
   });
 });
 
-// ===== JENIS PRODUK (SINGLE) =====
+// ===== CART =====
+let cart = [];
+
+// ===== JENIS PRODUK =====
 jenisGroup.addEventListener('click', e=>{
   if(!e.target.classList.contains('btn')) return;
 
-  // aktifkan button
   jenisGroup.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
   e.target.classList.add('active');
 
-  // reset
   varianGroup.innerHTML = '';
-  ringkasan.value = '';
-  totalHarga.value = 'Rp 0';
 
   const jenis = e.target.textContent.trim();
-
-  // render varian
   varianData[jenis].forEach(v=>{
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -207,32 +202,13 @@ jenisGroup.addEventListener('click', e=>{
   });
 });
 
-// ===== VARIAN (MULTI SELECT) =====
+// ===== VARIAN MULTI =====
 varianGroup.addEventListener('click', e=>{
   if(!e.target.classList.contains('btn')) return;
   e.target.classList.toggle('active');
-  hitungTotal();
 });
 
-// ===== HITUNG TOTAL ITEM (sementara) =====
-let cart = [];
-
-function hitungSementara(){
-  let total = 0;
-  const qty = parseInt(qtyInput.value || 1);
-  document.querySelectorAll('#varianProduk .btn.active').forEach(b=>{
-    const txt = b.textContent;
-    if(txt.includes('Single')) total += priceData.Kopi.Single * qty;
-    else if(txt.includes('Double')) total += priceData.Kopi.Double * qty;
-    else total += priceData.Roti * qty;
-  });
-  totalHarga.value = formatRupiah(total);
-}
-
-varianGroup.addEventListener('click', hitungSementara);
-qtyInput.addEventListener('input', hitungSementara);
-
-// ===== TAMBAH KE PESANAN =====
+// ===== TAMBAH KE CART =====
 document.getElementById('addItem').addEventListener('click', ()=>{
   const qty = parseInt(qtyInput.value || 1);
   document.querySelectorAll('#varianProduk .btn.active').forEach(b=>{
@@ -243,26 +219,45 @@ document.getElementById('addItem').addEventListener('click', ()=>{
     cart.push({nama:txt, qty, harga});
   });
   renderCart();
-  varianGroup.innerHTML='';
-  totalHarga.value='Rp 0';
+  varianGroup.innerHTML = '';
 });
 
 function renderCart(){
-  let total=0;
-  let lines=[];
+  let total = 0;
+  let lines = [];
   cart.forEach(i=>{
-    total+=i.harga*i.qty;
-    lines.push(`${i.nama} x${i.qty}`);
+    total += i.harga * i.qty;
+    lines.push(`- ${i.nama} x${i.qty}`);
   });
-  ringkasan.value = lines.join('
-');
+  ringkasan.value = lines.join('\n');
   totalHarga.value = formatRupiah(total);
-}('input', hitungTotal);
+}
 
-// ===== SUBMIT =====
+// ===== WHATSAPP =====
 document.getElementById('orderForm').addEventListener('submit', e=>{
   e.preventDefault();
-  alert('Pesanan terkirim! Total: ' + totalHarga.value);
+  if(cart.length === 0){ alert('Pesanan masih kosong'); return; }
+
+  const nama = document.querySelector('input[name="nama"]').value;
+  const alamat = document.querySelector('textarea[name="alamat"]').value;
+  const metodePesan = document.querySelector('[data-name="pemesanan"] .active')?.innerText || '-';
+  const metodeBayar = document.querySelector('[data-name="pembayaran"] .active')?.innerText || '-';
+
+  let pesan = `*PESANAN MOOMTAZ BAKERY*%0A%0A`;
+  pesan += `Nama: ${nama}%0A`;
+  pesan += `Alamat: ${alamat}%0A`;
+  pesan += `Metode Pesan: ${metodePesan}%0A`;
+  pesan += `Metode Bayar: ${metodeBayar}%0A%0A`;
+  pesan += `*Detail Pesanan:*%0A`;
+
+  cart.forEach(item=>{
+    pesan += `- ${item.nama} x${item.qty}%0A`;
+  });
+
+  pesan += `%0A*Total:* ${totalHarga.value}`;
+
+  const noAdmin = '6285161967997'; // GANTI NOMOR ADMIN
+  window.open(`https://wa.me/${noAdmin}?text=${pesan}`, '_blank');
 });
 </script>
 </body>

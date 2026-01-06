@@ -144,6 +144,10 @@
   </div>
 
 <script>
+// ===== UTIL =====
+function formatRupiah(num){return 'Rp ' + num.toLocaleString('id-ID');}
+
+// ===== DATA =====
 const varianData = {
   Donut:["Black Cookies","Carnaval","Bloody Marry","Greentea Shot","Eclipse","Funfetti","Black Peanut","Floss","Cheese Attack","Black Forrest","Pinkle","Pinky Bloom","Poco Loco","Cookies n Cream","Voldemond","Red Flag","Love Choco","Nut Ur Type","Cappu Nut","Capp Of Love","Till I Miss U","Miss Ur Kies","Green Nut","Unicorn"],
   Kopi:["Palm Sugar Latte - Single","Palm Sugar Latte - Double","Salted Caramel Latte - Single","Salted Caramel Latte - Double","Butterscotch Latte - Single","Butterscotch Latte - Double","Caramel Latte - Single","Caramel Latte - Double","Vanilla Latte - Single","Vanilla Latte - Double","Hazelnut Latte - Single","Hazelnut Latte - Double"],
@@ -154,22 +158,17 @@ const varianData = {
 
 const priceData = {
   Kopi:{Single:12000,Double:15000},
-  Roti:4000,
-  Bomboloni:{1:5000,5:23000},
-  MochiReguler:{1:10000},
-  MochiLittle:{2:15000}
+  Roti:4000
 };
 
-function activateButton(group, btn){
-  if(btn.classList.contains('multi')){
-    btn.classList.toggle('active');
-  } else {
-    group.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-}
+// ===== ELEMENT =====
+const jenisGroup = document.getElementById('jenisProduk');
+const varianGroup = document.getElementById('varianProduk');
+const totalHarga = document.getElementById('totalHarga');
+const ringkasan = document.getElementById('ringkasan');
+const qtyInput = document.getElementById('qtyGlobal');
 
-// Handler untuk button SINGLE pilih (pemesanan & pembayaran)
+// ===== SINGLE SELECT (metode) =====
 document.querySelectorAll('.btn-group[data-name]').forEach(group=>{
   group.addEventListener('click', e=>{
     if(!e.target.classList.contains('btn')) return;
@@ -177,63 +176,65 @@ document.querySelectorAll('.btn-group[data-name]').forEach(group=>{
     e.target.classList.add('active');
   });
 });
-});
 
-const jenisGroup = document.getElementById('jenisProduk');
-
-// pastikan tombol jenis produk bisa diklik
-jenisGroup.querySelectorAll('.btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    jenisGroup.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-const varianGroup = document.getElementById('varianProduk');
-
+// ===== JENIS PRODUK (SINGLE) =====
 jenisGroup.addEventListener('click', e=>{
   if(!e.target.classList.contains('btn')) return;
-  varianGroup.innerHTML='';
-  document.getElementById('ringkasan').value='';
-  document.getElementById('totalHarga').value='Rp 0';
-  const jenis = e.target.textContent;
+
+  // aktifkan button
+  jenisGroup.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+
+  // reset
+  varianGroup.innerHTML = '';
+  ringkasan.value = '';
+  totalHarga.value = 'Rp 0';
+
+  const jenis = e.target.textContent.trim();
+
+  // render varian
   varianData[jenis].forEach(v=>{
-    const b=document.createElement('div');
-    b.className='btn multi';
-    b.textContent=v;
-    varianGroup.appendChild(b);
-  });
-});
-    b.className='btn multi';
-    b.textContent=v;
-    varianGroup.appendChild(b);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn multi';
+    btn.textContent = v;
+    varianGroup.appendChild(btn);
   });
 });
 
-function formatRupiah(num){return 'Rp ' + num.toLocaleString('id-ID');}
+// ===== VARIAN (MULTI SELECT) =====
+varianGroup.addEventListener('click', e=>{
+  if(!e.target.classList.contains('btn')) return;
+  e.target.classList.toggle('active');
+  hitungTotal();
+});
 
+// ===== HITUNG TOTAL =====
 function hitungTotal(){
-  let total=0; let list=[];
-  const qty=parseInt(document.getElementById('qtyGlobal').value||1);
+  let total = 0;
+  let list = [];
+  const qty = parseInt(qtyInput.value || 1);
+
   document.querySelectorAll('#varianProduk .btn.active').forEach(b=>{
-    const txt=b.textContent;
-    if(txt.includes('Single')) total+=priceData.Kopi.Single*qty;
-    else if(txt.includes('Double')) total+=priceData.Kopi.Double*qty;
-    else total+=priceData.Roti*qty;
-    list.push(txt+' x'+qty);
+    const txt = b.textContent;
+
+    if(txt.includes('Single')) total += priceData.Kopi.Single * qty;
+    else if(txt.includes('Double')) total += priceData.Kopi.Double * qty;
+    else total += priceData.Roti * qty;
+
+    list.push(txt + ' x' + qty);
   });
-  totalHarga.value=formatRupiah(total);
-  ringkasan.value=list.join(', ');
+
+  totalHarga.value = formatRupiah(total);
+  ringkasan.value = list.join(', ');
 }
 
-varianGroup.addEventListener('click',()=>setTimeout(hitungTotal,100));
+qtyInput.addEventListener('input', hitungTotal);
 
-orderForm.addEventListener('submit', e=>{
+// ===== SUBMIT =====
+document.getElementById('orderForm').addEventListener('submit', e=>{
   e.preventDefault();
-  alert('Pesanan terkirim! Total: '+totalHarga.value);
-});
-  alert('Pesanan tersimpan. Total: ' + totalHarga.value);
-});
-  alert('Form siap dihubungkan ke Google Spreadsheet / Excel');
+  alert('Pesanan terkirim! Total: ' + totalHarga.value);
 });
 </script>
 </body>
